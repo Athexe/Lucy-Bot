@@ -10,6 +10,7 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 ROOM_CREATOR_CHANNEL_ID = int(os.getenv("ROOM_ID"))
 GUILD = int(os.getenv("GUILD"))
+CHANNEL_TO_SHOW_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_MEMBERS_ID"))
 IMAGES = ["avatar_night.jpg", "avatar_morning.jpg", "avatar_day.jpg", "avatar_evening.jpg"]
 list = [] #list of temporary channels
 
@@ -77,6 +78,22 @@ class Bot(commands.Bot):
         # Check is it time to change avatar
         if hour in (4,10,16,22):
             await self.change_avatar(images,hour)
+
+    async def on_member_join(self,member):
+        # Update the channel name when a member joins
+        await self.update_channel_name(member.guild)
+    
+    async def on_member_remove(self,member):
+        # Update the channel name when a member leaves
+        await self.update_channel_name(member.guild)
+    
+    async def update_channel_name(self,guild):
+        # Find the channel to update
+        channel = guild.get_channel(CHANNEL_TO_SHOW_MEMBERS_ID)
+        # Get the number of members on the server
+        num_members = len(guild.members)
+        # Update the channel name with the member count
+        await channel.edit(name=f"Members: {num_members}")
 
 keep_alive()
 if __name__ == '__main__':
