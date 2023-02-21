@@ -32,7 +32,7 @@ class Bot(commands.Bot):
             # User has joined the "Room creator" channel
             if after.channel and after.channel.id == ROOM_CREATOR_CHANNEL_ID:
                 # Create a new voice channel with max bitrate
-                new_channel_name = f'🌴 Chill ({member.name})'
+                new_channel_name = f'🔸 Room ({member.name})'
                 new_channel = await member.guild.create_voice_channel(new_channel_name, category=after.channel.category, bitrate=96000,reason = "Bot Created")
                 # Move the user to the new channel
                 await member.move_to(new_channel)
