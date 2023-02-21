@@ -10,7 +10,8 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 ROOM_CREATOR_CHANNEL_ID = int(os.getenv("ROOM_ID"))
 GUILD = int(os.getenv("GUILD"))
-CHANNEL_TO_SHOW_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_MEMBERS_ID"))
+CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID"))
+CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID"))
 IMAGES = ["avatar_night.jpg", "avatar_morning.jpg", "avatar_day.jpg", "avatar_evening.jpg"]
 list = [] #list of temporary channels
 
@@ -18,6 +19,7 @@ class Bot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
         intents.members = True
+        intents.presences = True
         super().__init__(command_prefix='!', intents=intents)
       
     async def on_ready(self):
@@ -81,19 +83,28 @@ class Bot(commands.Bot):
 
     async def on_member_join(self,member):
         # Update the channel name when a member joins
-        await self.update_channel_name(member.guild)
+        await self.update_channel_names(member.guild)
     
     async def on_member_remove(self,member):
         # Update the channel name when a member leaves
-        await self.update_channel_name(member.guild)
+        await self.update_channel_names(member.guild)
+
+    async def on_presence_update(self,member,_):
+        # Update the channels when a member's presence changes
+        await self.update_channel_names(member.guild)
     
-    async def update_channel_name(self,guild):
+    async def update_channel_names(self,guild):
         # Find the channel to update
-        channel = guild.get_channel(CHANNEL_TO_SHOW_MEMBERS_ID)
+        total_members_channel = guild.get_channel(CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID)
+        online_members_channel = guild.get_channel(CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID)
         # Get the number of members on the server
-        num_members = len(guild.members)
-        # Update the channel name with the member count
-        await channel.edit(name=f"Members: {num_members}")
+        number_of_members = len(guild.members)
+        # Get the number of members who are currently online
+        number_of_online_members = len([m for m in guild.members if m.status != discord.Status.offline])
+        # Update the channel names with the member count
+        await total_members_channel.edit(name=f"Members: {number_of_members}")
+        await online_members_channel.edit(name=f"Online: {number_of_online_members}")
+
 
 keep_alive()
 if __name__ == '__main__':
