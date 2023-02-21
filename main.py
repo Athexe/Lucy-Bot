@@ -81,18 +81,6 @@ class Bot(commands.Bot):
         # Check is it time to change avatar
         if hour in (4,10,16,22):
             await self.change_avatar(images,hour)
-
-    #async def on_member_join(self,member):
-    #    # Update the channel name when a member joins
-    #    await self.update_channel_names(member.guild)
-    
-    #async def on_member_remove(self,member):
-    #    # Update the channel name when a member leaves
-    #    await self.update_channel_names(member.guild)
-
-    #async def on_presence_update(self,member,_):
-    #    # Update the channels when a member's presence changes
-    #    await self.update_channel_names(member.guild)
     
     @tasks.loop(minutes=1)
     async def update_channel_names(self,guild):
@@ -104,7 +92,6 @@ class Bot(commands.Bot):
         # Get the number of members who are currently online
         number_of_online_members = len([m for m in guild.members if m.status != discord.Status.offline])
         # Update the channel names with the member count
-        print("numbers changes "+str(number_of_members)+" "+str(number_of_online_members))
         await total_members_channel.edit(name=f"Members: {number_of_members}")
         await online_members_channel.edit(name=f"Online: {number_of_online_members}")
 
