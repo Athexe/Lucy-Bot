@@ -1,7 +1,7 @@
 import os
 import discord
 import asyncio
-from discord.ext import commands
+from discord.ext import commands, tasks
 from webserver import keep_alive
 from datetime import datetime
 from dotenv import load_dotenv
@@ -20,11 +20,12 @@ class Bot(commands.Bot):
         super().__init__(command_prefix='!', intents=intents)
       
     async def on_ready(self):
-        self.guild = self.get_guild(GUILD)
         print(f'Logged in as {self.user} (ID: {self.user.id})')
-        while True:
-          await self.change_avatar()
-          await asyncio.sleep(600) # check every minute
+        self.guild = self.get_guild(GUILD)
+        # Read images once after start
+        images = await self.read_images()
+        # Start task to change avatar every 6 hours
+        self.change_avatar_task.start(images)
 
     async def on_voice_state_update(self, member, before, after):
         if before.channel != after.channel:
@@ -46,20 +47,37 @@ class Bot(commands.Bot):
                 # Deleting temporary channel
                 await before.channel.delete()
 
-    async def change_avatar(self):
-        # Check what time is it
-        now = datetime.now()
-        # Get hour of time
-        hour = now.hour
-        # Get index of image for new avatar
-        image_index = hour // 6 # change avatar every 6 hours
+    async def change_avatar(self,images,hour):
+        # Define index of image by hour
+        match hour:
+            case 22:
+                image_index = 0
+            case 4:
+                image_index = 1
+            case 10:
+                image_index = 2
+            case 16:
+                image_index = 3
+
         # Get image for new avatar
-        image_filename = IMAGES[image_index]
-        with open(image_filename, "rb") as image_file:
-          image_data = image_file.read()
-        
-        # Change current avatar
-        await self.guild.edit(icon=image_data)
+        await self.guild.edit(icon=images[image_index])
+    
+    async def read_images(self):
+        images = []
+        for filename in IMAGES:
+            with open(filename, "rb") as image_file:
+                image_data = image_file.read()
+                images.append(image_data)
+        return images
+    
+    @tasks.loop(minutes=10)
+    async def change_avatar_task(self,images):
+        hour = datetime.utcnow().hour
+        if hour in (4,10,16,22):
+            print("time to change avatar " + str(hour))
+            await self.change_avatar(images,hour)
+        else:
+            print("not this time "+ str(hour))
 
 keep_alive()
 if __name__ == '__main__':
