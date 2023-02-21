@@ -10,7 +10,7 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 ROOM_CREATOR_CHANNEL_ID = int(os.getenv("ROOM_ID"))
 GUILD = int(os.getenv("GUILD"))
-IMAGES = ["avatar_1.jpg", "avatar_2.jpg", "avatar_3.jpg", "avatar_4.jpg"]
+IMAGES = ["avatar_night.jpg", "avatar_morning.jpg", "avatar_day.jpg", "avatar_evening.jpg"]
 list = [] #list of temporary channels
 
 class Bot(commands.Bot):
@@ -72,12 +72,11 @@ class Bot(commands.Bot):
     
     @tasks.loop(minutes=10)
     async def change_avatar_task(self,images):
+        # Get current UTC time
         hour = datetime.utcnow().hour
+        # Check is it time to change avatar
         if hour in (4,10,16,22):
-            print("time to change avatar " + str(hour))
             await self.change_avatar(images,hour)
-        else:
-            print("not this time "+ str(hour))
 
 keep_alive()
 if __name__ == '__main__':
