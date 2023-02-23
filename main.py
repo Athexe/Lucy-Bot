@@ -13,7 +13,7 @@ ROOM_CREATOR_CHANNEL_ID = int(os.getenv("ROOM_ID"))
 GUILD = int(os.getenv("GUILD"))
 CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID"))
 CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID"))
-IMAGES = ["avatar_night.jpg", "avatar_morning.jpg", "avatar_day.jpg", "avatar_evening.jpg"]
+IMAGES = ["avatar_night.gif", "avatar_morning.gif", "avatar_day.gif", "avatar_evening.gif"]
 list = [] #list of temporary channels
 
 intents = discord.Intents.default()
