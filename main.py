@@ -18,7 +18,7 @@ list = [] #list of temporary channels
 # Reading from file, if there are not deleted channels
 f = open('id_temp.txt')
 for id in f:
-    list.append(id)
+    list.append(int(id))
 f.close()
 
 intents = discord.Intents.default()
@@ -60,7 +60,7 @@ async def on_voice_state_update(member, before, after):
     # Write in file to save if bot closed
     f = open('id_temp.txt', 'w')
     for id in list:
-        f.write(id + '\n')
+        f.write(str(id) + '\n')
     f.close()
 
 async def read_images():
