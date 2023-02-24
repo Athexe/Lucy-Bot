@@ -90,8 +90,8 @@ async def update_channel_names(guild):
     number_of_online_members = len([m for m in guild.members if m.status != discord.Status.offline])
     # Update the channel names with the member count
     #print("Updated " +str(number_of_members)+" "+str(number_of_online_members))
-    await total_members_channel.edit(name=f"Members: {number_of_members}")
-    await online_members_channel.edit(name=f"Online: {number_of_online_members}")
+    await total_members_channel.edit(name=f"⚪️▏Members: {number_of_members}")
+    await online_members_channel.edit(name=f"🟢▏Online: {number_of_online_members}")
 
 keep_alive()
 bot.run(TOKEN)
