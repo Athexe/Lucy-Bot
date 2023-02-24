@@ -35,7 +35,8 @@ async def on_ready():
     images = await read_images()
     # Start task to change avatar every 6 hours
     change_avatar.start(images,guild)
-    update_channel_names.start(guild)    
+    # Start task to update online members count every minute
+    update_online_members.start(guild)    
 
 @bot.event
 async def on_voice_state_update(member, before, after):
@@ -63,6 +64,16 @@ async def on_voice_state_update(member, before, after):
         f.write(str(id) + '\n')
     f.close()
 
+@bot.event
+async def on_member_join(member):
+    # Update the channels when a member joins or leaves
+    await update_total_members(member.guild)
+
+@bot.event
+async def on_member_remove(member):
+    # Update the channels when a member joins or leaves
+    await update_total_members(member.guild)
+
 async def read_images():
     images = []
     for filename in IMAGES:
@@ -88,19 +99,22 @@ async def change_avatar(images,guild):
         case _:
             return
             #print("not this time")
-    
-@tasks.loop(minutes=2)
-async def update_channel_names(guild):
-    # Find the channel to update
+
+async def update_total_members(guild):
+    # Find channel to update
     total_members_channel = guild.get_channel(CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID)
-    online_members_channel = guild.get_channel(CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID)
     # Get the number of members on the server
     number_of_members = len(guild.members)
+    # Update the channel name with member count
+    await total_members_channel.edit(name=f"⚪️▏Members: {number_of_members}")
+
+@tasks.loop(minutes=1)
+async def update_online_members(guild):
+    # Find the channel to update
+    online_members_channel = guild.get_channel(CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID)
     # Get the number of members who are currently online
     number_of_online_members = len([m for m in guild.members if m.status != discord.Status.offline])
-    # Update the channel names with the member count
-    #print("Updated " +str(number_of_members)+" "+str(number_of_online_members))
-    await total_members_channel.edit(name=f"⚪️▏Members: {number_of_members}")
+    # Update the channel name with online member count
     await online_members_channel.edit(name=f"🟢▏Online: {number_of_online_members}")
 
 keep_alive()
