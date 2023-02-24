@@ -15,6 +15,10 @@ CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_TOTAL_MEMBERS_
 CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID"))
 IMAGES = ["avatar_night.gif", "avatar_morning.gif", "avatar_day.gif", "avatar_evening.gif"]
 list = [] #list of temporary channels
+f = open('id_temp.txt')
+for id in f:
+    list.append(id)
+
 
 intents = discord.Intents.default()
 intents.members = True
@@ -60,7 +64,16 @@ async def read_images():
             image_data = image_file.read()
             images.append(image_data)
     return images
-    
+
+@bot.event
+async def on_disconnect():
+    # Your code for cleanup or logging goes here
+    f = open('id_temp.txt', 'w')
+    for id in list:
+        f.write(id + '\n')
+    print('Bot is disconnecting...')
+    await bot.close()
+   
 @tasks.loop(minutes=10)
 async def change_avatar(images,guild):
     # Get current UTC time
@@ -79,7 +92,7 @@ async def change_avatar(images,guild):
             return
             #print("not this time")
     
-@tasks.loop(minutes=1)
+@tasks.loop(minutes=2)
 async def update_channel_names(guild):
     # Find the channel to update
     total_members_channel = guild.get_channel(CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID)
