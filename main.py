@@ -73,18 +73,14 @@ async def change_avatar(images,guild):
     # Get current Ukraine time
     hour = datetime.now(timezone('Europe/Kiev')).hour
     # Check is it time to change avatar
-    match hour:
-        case 0:
-            await guild.edit(icon=images[0])
-        case 6:
-            await guild.edit(icon=images[1])
-        case 12:
-            await guild.edit(icon=images[2])
-        case 18:
-            await guild.edit(icon=images[3])
-        case _:
-            return
-            #print("not this time")
+    if hour==0:
+    	await guild.edit(icon=images[0])
+    elif hour==6:
+    	await guild.edit(icon=images[1])
+    elif hour==12:
+    	await guild.edit(icon=images[2])
+    elif hour==18:
+    	await guild.edit(icon=images[3])
 
 async def update_total_members(guild):
     # Find channel to update
