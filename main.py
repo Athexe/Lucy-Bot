@@ -13,13 +13,7 @@ ROOM_CREATOR_CHANNEL_ID = int(os.getenv("ROOM_ID"))
 GUILD = int(os.getenv("GUILD"))
 CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID"))
 IMAGES = ["avatar_night.gif", "avatar_morning.gif", "avatar_day.gif", "avatar_evening.gif"]
-
 list = [] #list of temporary channels
-# Reading from file, if there are not deleted channels
-f = open('id_temp.txt')
-for id in f:
-    list.append(int(id))
-f.close()
 
 intents = discord.Intents.default()
 intents.members = True
@@ -55,11 +49,6 @@ async def on_voice_state_update(member, before, after):
             list.remove(before.channel.id)
             # Deleting temporary channel
             await before.channel.delete()
-    # Write in file to save if bot closed
-    f = open('id_temp.txt', 'w')
-    for id in list:
-        f.write(str(id) + '\n')
-    f.close()
 
 @bot.event
 async def on_member_join(member):
