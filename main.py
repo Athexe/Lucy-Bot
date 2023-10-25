@@ -12,7 +12,7 @@ TOKEN = os.getenv("TOKEN")
 ROOM_CREATOR_CHANNEL_ID = int(os.getenv("ROOM_CREATOR_CHANNEL_ID"))
 GUILD = int(os.getenv("GUILD"))
 CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID"))
-IMAGES = ["avatar_night.gif", "avatar_morning.gif", "avatar_day.gif", "avatar_evening.gif"]
+IMAGES = ["night.gif", "morning.gif", "day.gif", "evening.gif"]
 list = [] #list of temporary channels
 
 intents = discord.Intents.default()
@@ -63,7 +63,7 @@ async def on_member_remove(member):
 async def read_images():
     images = []
     for filename in IMAGES:
-        with open(filename, "rb") as image_file:
+        with open("img/"+filename, "rb") as image_file:
             image_data = image_file.read()
             images.append(image_data)
     return images
