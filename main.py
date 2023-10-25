@@ -9,7 +9,7 @@ from pytz import timezone
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
-ROOM_CREATOR_CHANNEL_ID = int(os.getenv("ROOM_ID"))
+ROOM_CREATOR_CHANNEL_ID = int(os.getenv("ROOM_CREATOR_CHANNEL_ID"))
 GUILD = int(os.getenv("GUILD"))
 CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID"))
 IMAGES = ["avatar_night.gif", "avatar_morning.gif", "avatar_day.gif", "avatar_evening.gif"]
