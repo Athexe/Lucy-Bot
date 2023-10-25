@@ -2,9 +2,9 @@ import os
 import discord
 import asyncio
 from discord.ext import commands, tasks
-from webserver import keep_alive
 from datetime import datetime
 from dotenv import load_dotenv
+from pytz import timezone
 
 load_dotenv()
 
@@ -12,8 +12,8 @@ TOKEN = os.getenv("TOKEN")
 ROOM_CREATOR_CHANNEL_ID = int(os.getenv("ROOM_ID"))
 GUILD = int(os.getenv("GUILD"))
 CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_TOTAL_MEMBERS_ID"))
-CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID = int(os.getenv("CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID"))
 IMAGES = ["avatar_night.gif", "avatar_morning.gif", "avatar_day.gif", "avatar_evening.gif"]
+
 list = [] #list of temporary channels
 # Reading from file, if there are not deleted channels
 f = open('id_temp.txt')
@@ -26,7 +26,6 @@ intents.members = True
 intents.presences = True
 bot = commands.Bot(intents=intents,command_prefix='!')
 
-
 @bot.event   
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
@@ -34,9 +33,7 @@ async def on_ready():
     # Read images once after start
     images = await read_images()
     # Start task to change avatar every 6 hours
-    change_avatar.start(images,guild)
-    # Start task to update online members count every minute
-    update_online_members.start(guild)    
+    change_avatar.start(images,guild)  
 
 @bot.event
 async def on_voice_state_update(member, before, after):
@@ -84,17 +81,17 @@ async def read_images():
    
 @tasks.loop(minutes=10)
 async def change_avatar(images,guild):
-    # Get current UTC time
-    hour = datetime.utcnow().hour
+    # Get current Ukraine time
+    hour = datetime.now(timezone('Europe/Kiev')).hour
     # Check is it time to change avatar
     match hour:
-        case 22:
+        case 0:
             await guild.edit(icon=images[0])
-        case 4:
+        case 6:
             await guild.edit(icon=images[1])
-        case 10:
+        case 12:
             await guild.edit(icon=images[2])
-        case 16:
+        case 18:
             await guild.edit(icon=images[3])
         case _:
             return
@@ -108,14 +105,4 @@ async def update_total_members(guild):
     # Update the channel name with member count
     await total_members_channel.edit(name=f"⚪️▏Members: {number_of_members}")
 
-@tasks.loop(minutes=1)
-async def update_online_members(guild):
-    # Find the channel to update
-    online_members_channel = guild.get_channel(CHANNEL_TO_SHOW_ONLINE_MEMBERS_ID)
-    # Get the number of members who are currently online
-    number_of_online_members = len([m for m in guild.members if m.status != discord.Status.offline])
-    # Update the channel name with online member count
-    await online_members_channel.edit(name=f"🟢▏Online: {number_of_online_members}")
-
-keep_alive()
 bot.run(TOKEN)
