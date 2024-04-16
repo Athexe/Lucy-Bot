@@ -18,7 +18,9 @@ list = [] #list of temporary channels
 intents = discord.Intents.default()
 intents.members = True
 intents.presences = True
-bot = commands.Bot(intents=intents,command_prefix='!')
+intents.message_content = True
+intents.voice_states = True
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.event   
 async def on_ready():
@@ -67,7 +69,14 @@ async def read_images():
             image_data = image_file.read()
             images.append(image_data)
     return images
-   
+
+
+@bot.command()
+async def status(ctx):
+    embed = discord.Embed(title="Ok", color=discord.Color.green())
+    await ctx.reply(embed=embed)
+
+
 @tasks.loop(minutes=10)
 async def change_avatar(images,guild):
     # Get current Ukraine time
